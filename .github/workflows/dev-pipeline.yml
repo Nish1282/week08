@@ -129,10 +129,12 @@ jobs:
 
       - name: Deploy backend manifests
         run: |
-          kubectl apply -f week08/k8s/configmaps.yaml
-          kubectl apply -f week08/k8s/secrets.yaml
-          kubectl apply -f week08/k8s/product-service.yaml
-          kubectl apply -f week08/k8s/order-service.yaml
+          kubectl apply -f k8s/configmaps.yaml
+          kubectl apply -f k8s/secrets.yaml
+          kubectl apply -f k8s/product-db.yaml
+          kubectl apply -f k8s/order-db.yaml
+          kubectl apply -f k8s/product-service.yaml
+          kubectl apply -f k8s/order-service.yaml
 
       - name: Wait for backend IPs
         id: get_ips
@@ -180,4 +182,4 @@ jobs:
           docker push sit722acr02.azurecr.io/frontend:latest
 
       - name: Deploy frontend to AKS
-        run: kubectl apply -f week08/k8s/frontend.yaml
+        run: kubectl apply -f k8s/frontend.yaml
