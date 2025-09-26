@@ -127,13 +127,6 @@ jobs:
             --name sit722aks01 \
             --overwrite-existing
 
-      - name: Attach ACR
-        run: |
-          az aks update \
-            --resource-group sit722-rg \
-            --name sit722aks01 \
-            --attach-acr sit722acr02
-
       - name: Deploy backend manifests
         run: |
           kubectl apply -f week08/k8s/configmaps.yaml
