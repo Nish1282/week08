@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_LOGIN_SERVER: s224913279acr.azurecr.io
+  ACR_LOGIN_SERVER: sit722acr02.azurecr.io
   IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
       order_db:
         image: postgres:15
         env:
@@ -91,17 +92,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
-        run: az acr login --name s224913279acr
+        run: az acr login --name sit722acr02
 
       - name: Build & push Product Service
         run: |
-          docker build -t s224913279acr.azurecr.io/product_service:latest ./backend/product_service
-          docker push s224913279acr.azurecr.io/product_service:latest
+          docker build -t sit722acr02.azurecr.io/product_service:latest ./backend/product_service
+          docker push sit722acr02.azurecr.io/product_service:latest
 
       - name: Build & push Order Service
         run: |
-          docker build -t s224913279acr.azurecr.io/order_service:latest ./backend/order_service
-          docker push s224913279acr.azurecr.io/order_service:latest
+          docker build -t sit722acr02.azurecr.io/order_service:latest ./backend/order_service
+          docker push sit722acr02.azurecr.io/order_service:latest
 
   # 3. Deploy backend to AKS
   deploy_backend:
@@ -123,15 +124,15 @@ jobs:
         run: |
           az aks get-credentials \
             --resource-group sit722-rg \
-            --name sit722-aks \
+            --name sit722aks01 \
             --overwrite-existing
 
       - name: Attach ACR
         run: |
           az aks update \
             --resource-group sit722-rg \
-            --name sit722-aks \
-            --attach-acr s224913279acr
+            --name sit722aks01 \
+            --attach-acr sit722acr02
 
       - name: Deploy backend manifests
         run: |
@@ -172,7 +173,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
-        run: az acr login --name s224913279acr
+        run: az acr login --name sit722acr02
 
       - name: Inject backend IPs into frontend
         run: |
@@ -182,8 +183,8 @@ jobs:
 
       - name: Build & push frontend
         run: |
-          docker build -t s224913279acr.azurecr.io/frontend:latest ./frontend
-          docker push s224913279acr.azurecr.io/frontend:latest
+          docker build -t sit722acr02.azurecr.io/frontend:latest ./frontend
+          docker push sit722acr02.azurecr.io/frontend:latest
 
       - name: Deploy frontend to AKS
         run: kubectl apply -f week08/k8s/frontend.yaml
